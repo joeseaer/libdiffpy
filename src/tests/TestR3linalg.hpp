@@ -73,6 +73,32 @@ public:
     }
 
 
+    void test_eigen_solve_3x3()
+    {
+        R3::Matrix A(
+                2.0, 1.0, 0.0,
+                1.0, 2.0, 0.0,
+                0.0, 0.0, 4.0);
+        R3::Vector eigenvalues;
+        R3::Matrix eigenvectors;
+        R3::eigen_solve_3x3(A, eigenvalues, eigenvectors);
+
+        TS_ASSERT_DELTA(1.0, eigenvalues[0], precision);
+        TS_ASSERT_DELTA(3.0, eigenvalues[1], precision);
+        TS_ASSERT_DELTA(4.0, eigenvalues[2], precision);
+        for (int j = 0; j < R3::Ndim; ++j)
+        {
+            R3::Vector v(
+                    eigenvectors(0, j),
+                    eigenvectors(1, j),
+                    eigenvectors(2, j));
+            R3::Vector Av = R3::mxvecproduct(A, v);
+            TS_ASSERT(allclose(Av, eigenvalues[j] * v));
+            TS_ASSERT_DELTA(1.0, R3::norm(v), precision);
+        }
+    }
+
+
     void test_transpose()
     {
         R3::Matrix A(
